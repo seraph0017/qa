@@ -1,0 +1,16 @@
+{% load comments %}
+{% load gravatar %}
+<article id="cmt">
+    {% get_comment_count for details as comment_count %}
+        <h4 class="muted comtop">{{ comment_count }} Comments</h4>
+        <hr class="soften">  
+    {% get_comment_list for details as blog_com %}
+    {% for comment in blog_com %}
+        <img class="img-rounded J_head" src="{% gravatar_url comment.user.email %}"></img>
+        <div class="container-fluid none-padding J_info">
+            <p class="muted"><small>{{ comment.user.get_profile }}</small> <small>{{ comment.submit_date|date:"Y-m-d, H:m:s" }}</small></p>      
+            {{ comment.comment }}           
+        </div>
+        <hr class="soften">                   
+    {% endfor %}
+</article>

@@ -1,0 +1,41 @@
+{% extends "base.html" %}
+
+{% block title %}发布新帖{% endblock %}
+
+{% block content %}
+<h2>发布新帖</h2>
+<form type="post" action="" name="publish" id="publishform">
+    <hr/>
+
+    <input type="text" class="form-control" placeholder="标题" name="title">
+    <hr/>
+
+    板块
+    <select class="form-control input-sm J_select" name="board">
+        {% for i in boards %}
+        <option>{{i}}</option>
+        {% endfor %}
+    </select>
+    类型
+    <select class="form-control input-sm J_select" name="field">
+        {% for i in spfields %}
+        <option>{{i}}</option>
+        {% endfor %}
+    </select>
+    所用工具
+    <select class="form-control input-sm J_select" name="tool">
+        {% for i in tools %}
+        <option>{{i}}</option>
+        {% endfor %}
+    </select>
+    <hr/>
+
+
+    <textarea name="content" class="form-control" rows="15" placeholder="内容"></textarea>
+    <hr/>
+    <button type="submit" class="btn btn-primary btn-lg">发帖</button>
+</form>
+{% endblock %}
+{% block script %}
+<script src="/static/js/publish.js"></script>
+{% endblock %}

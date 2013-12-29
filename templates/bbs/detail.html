@@ -1,0 +1,102 @@
+{% extends "base.html" %}
+{% load comments %}
+{% load gravatar %}
+
+{% block title %}{{ topic.topic_title }}{% endblock %}
+<div class="article">
+    {% block content %}
+    <h1>{{ topic.topic_title }}</h1>
+    
+    <ul>
+        {{ topic.topic_time }}
+    </ul>
+    <ul>
+        {{ topic.topic_content|safe }}
+    </ul>
+    
+    {% endblock %}
+
+</div>
+
+{% block comments %}
+<article id="cmt">
+    {% get_comment_count for topic as comment_count %}
+
+    <h4 class="muted comtop">{{ comment_count }} Comments</h4>
+    <hr class="soften">
+    {% get_comment_list for topic as topic_com %}
+    {% for comment in topic_com %}
+    <img class="img-rounded J_head" src="{% gravatar_url comment.user.email %}"></img>
+    <div class="container-fluid none-padding J_info">
+
+        <p class="muted"><small>{{ comment.user.get_profile }}</small> <small>{{ comment.submit_date|date:"Y-m-d, H:m:s" }}</small></p>
+        {{ comment.comment }}
+    </div>
+    <hr class="soften">
+    {% endfor %}
+</article>
+
+<article >
+    {% get_comment_form for topic as topic_form %}
+
+    <div id="comment_form">
+        <h4 class="muted comtop">New Comments</h4>
+        <form class="form-horizontal" action="{% comment_form_target %}" method="post">
+            <fieldset>
+                {% csrf_token %}
+                {{ topic_form.object_pk }}
+                {{ topic_form.content_type }}
+                {{ topic_form.timestamp }}
+                {{ topic_form.site }}
+                {{ topic_form.submit_date }}
+                {{ topic_form.security_hash }}
+                <div class="control-group">
+                    <label class="control-label" for="id_comment">comment: </label>
+                    <div class="controls">
+                        <textarea class="input-xlarge comment" id="id_comment" name="comment" placeholder="please enter comment" required="required"></textarea>
+                    </div>
+                </div>
+                <p style="display:none;"><label for="id_honeypot">如果你在该字>段中输入任何内容，那么你的评论就会被视为垃圾评论。</label> <input type="text" name="honeypot" id="id_honeypot"></p>
+                <div class="form-actions">
+                    <input class="btn btn-info" id="id_submit" type="submit" name="submit" value="发表">
+                    {# <input class="btn btn-info" type="submit" name="preview" value="Preview"> #}
+                    <input type='hidden' name='next' value='{% url "bbs:showcomment" topic.id %}'/>
+                </div>
+            </fieldset>
+        </form>
+    </div>
+</article>
+
+{% endblock %}
+
+
+{% block script %}
+<script type="text/javascript" charset="utf-8">
+function bindPostCommentHandler() {
+    $('#comment_form form input.submit-preview').remove();
+
+    $('#comment_form form').submit(function() {
+
+        $.ajax({
+            type: "POST",
+            data: $('#comment_form form').serialize(),
+            url: "{% comment_form_target %}",
+            cache: false,
+            dataType: "html",
+            success: function(html, textStatus) {
+                $('#cmt').replaceWith(html);
+                $('#comment_form form')[0].reset();
+            },
+            error: function (XMLHttpRequest, textStatus, errorThrown) {
+                $('#comment_form form').replaceWith('Your comment was unable to be posted at this time.  We apologise for the inconvenience.');
+            }
+        });
+        return false;
+    });
+}
+
+$(document).ready(function() {
+    bindPostCommentHandler();
+});
+</script>
+{% endblock %}
