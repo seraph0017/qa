@@ -5,11 +5,12 @@ body{
 div.main {
     background-color: #fff;
     padding: 20px;
+
 }
 
 form#search {
     margin-top: 10px;
-    margin-left: 200px;
+    margin-left: 20px;
 }
 
 
@@ -99,5 +100,21 @@ span.J_comment_count {
 
 select.J_select {
   width: 120px;
+  margin-left: 20px;
   display: inline-block;
 }
+
+button.J_redi {
+  float: right;
+}
+
+button.J_filter_sub {
+  margin-left: 70px;
+}
+
+span.J_tags {
+  line-height: 2;
+  cursor: pointer;
+}
+
+

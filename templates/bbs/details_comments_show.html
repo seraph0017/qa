@@ -8,7 +8,7 @@
     {% for comment in blog_com %}
         <img class="img-rounded J_head" src="{% gravatar_url comment.user.email %}"></img>
         <div class="container-fluid none-padding J_info">
-            <p class="muted"><small>{{ comment.user.get_profile }}</small> <small>{{ comment.submit_date|date:"Y-m-d, H:m:s" }}</small></p>      
+            <p class="muted"><small>{{ comment.user.get_profile }}</small> <small>{{ comment.submit_date|date:"Y-m-d, H:i:s" }}</small></p>      
             {{ comment.comment }}           
         </div>
         <hr class="soften">                   

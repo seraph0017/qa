@@ -16,18 +16,14 @@
         <option>{{i}}</option>
         {% endfor %}
     </select>
-    类型
-    <select class="form-control input-sm J_select" name="field">
-        {% for i in spfields %}
-        <option>{{i}}</option>
-        {% endfor %}
-    </select>
-    所用工具
-    <select class="form-control input-sm J_select" name="tool">
-        {% for i in tools %}
-        <option>{{i}}</option>
-        {% endfor %}
-    </select>
+    <hr/>
+    选择标签:
+    {% for i in tags %}
+        <label class="checkbox-inline">
+          <input type="checkbox" name="tags" value="{{i}}">{{i}}</input>
+        </label>
+    {% endfor %}
+
     <hr/>
 
 

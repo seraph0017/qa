@@ -20,14 +20,17 @@ class Migration(SchemaMigration):
         db.create_table(u'bbs_topic', (
             (u'id', self.gf('django.db.models.fields.AutoField')(primary_key=True)),
             ('topic_title', self.gf('django.db.models.fields.CharField')(max_length=255)),
-            ('topic_content', self.gf('django.db.models.fields.TextField')()),
+            ('topic_content', self.gf('tinymce.models.HTMLField')()),
             ('topic_time', self.gf('django.db.models.fields.DateTimeField')(auto_now_add=True, blank=True)),
             ('topic_board', self.gf('django.db.models.fields.related.ForeignKey')(related_name='topic_board', to=orm['bbs.Board'])),
             ('topic_author', self.gf('django.db.models.fields.related.ForeignKey')(related_name='topic_author', to=orm['account.UserProfile'])),
-            ('topic_category', self.gf('django.db.models.fields.CharField')(default='autofunction', max_length=30)),
-            ('topic_tool', self.gf('django.db.models.fields.CharField')(default='selenium', max_length=30)),
+            ('topic_category', self.gf('django.db.models.fields.related.ForeignKey')(related_name='topic_specialfield', to=orm['account.SpecialField'])),
+            ('topic_tool', self.gf('django.db.models.fields.related.ForeignKey')(related_name='topic_tool', to=orm['account.Tools'])),
+            ('topic_final_comment_user', self.gf('django.db.models.fields.CharField')(max_length=255)),
+            ('topic_final_comment_time', self.gf('django.db.models.fields.DateTimeField')()),
             ('topic_status', self.gf('django.db.models.fields.CharField')(default='normal', max_length=30)),
             ('topic_is_top', self.gf('django.db.models.fields.CharField')(default='no', max_length=30)),
+            ('topic_is_pub', self.gf('django.db.models.fields.CharField')(default='no', max_length=30)),
         ))
         db.send_create_signal(u'bbs', ['Topic'])
 
@@ -41,10 +44,20 @@ class Migration(SchemaMigration):
 
 
     models = {
+        u'account.specialfield': {
+            'Meta': {'object_name': 'SpecialField'},
+            'field_title': ('django.db.models.fields.CharField', [], {'max_length': '255'}),
+            u'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'})
+        },
+        u'account.tools': {
+            'Meta': {'object_name': 'Tools'},
+            u'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
+            'tool_title': ('django.db.models.fields.CharField', [], {'max_length': '255'})
+        },
         u'account.userprofile': {
             'Meta': {'object_name': 'UserProfile'},
-            'fav_local': ('django.db.models.fields.CharField', [], {'default': "'hand'", 'max_length': '20'}),
-            'fav_tool': ('django.db.models.fields.CharField', [], {'default': "'hand'", 'max_length': '20'}),
+            'fav_local': ('django.db.models.fields.related.ForeignKey', [], {'related_name': "'user_specialfield'", 'to': u"orm['account.SpecialField']"}),
+            'fav_tool': ('django.db.models.fields.related.ForeignKey', [], {'related_name': "'user_tools'", 'to': u"orm['account.Tools']"}),
             u'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
             'screen_name': ('django.db.models.fields.CharField', [], {'max_length': '10'}),
             'user': ('django.db.models.fields.related.ForeignKey', [], {'to': u"orm['auth.User']", 'unique': 'True'})
@@ -89,13 +102,16 @@ class Migration(SchemaMigration):
             u'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
             'topic_author': ('django.db.models.fields.related.ForeignKey', [], {'related_name': "'topic_author'", 'to': u"orm['account.UserProfile']"}),
             'topic_board': ('django.db.models.fields.related.ForeignKey', [], {'related_name': "'topic_board'", 'to': u"orm['bbs.Board']"}),
-            'topic_category': ('django.db.models.fields.CharField', [], {'default': "'autofunction'", 'max_length': '30'}),
-            'topic_content': ('django.db.models.fields.TextField', [], {}),
+            'topic_category': ('django.db.models.fields.related.ForeignKey', [], {'related_name': "'topic_specialfield'", 'to': u"orm['account.SpecialField']"}),
+            'topic_content': ('tinymce.models.HTMLField', [], {}),
+            'topic_final_comment_time': ('django.db.models.fields.DateTimeField', [], {}),
+            'topic_final_comment_user': ('django.db.models.fields.CharField', [], {'max_length': '255'}),
+            'topic_is_pub': ('django.db.models.fields.CharField', [], {'default': "'no'", 'max_length': '30'}),
             'topic_is_top': ('django.db.models.fields.CharField', [], {'default': "'no'", 'max_length': '30'}),
             'topic_status': ('django.db.models.fields.CharField', [], {'default': "'normal'", 'max_length': '30'}),
             'topic_time': ('django.db.models.fields.DateTimeField', [], {'auto_now_add': 'True', 'blank': 'True'}),
             'topic_title': ('django.db.models.fields.CharField', [], {'max_length': '255'}),
-            'topic_tool': ('django.db.models.fields.CharField', [], {'default': "'selenium'", 'max_length': '30'})
+            'topic_tool': ('django.db.models.fields.related.ForeignKey', [], {'related_name': "'topic_tool'", 'to': u"orm['account.Tools']"})
         },
         u'contenttypes.contenttype': {
             'Meta': {'ordering': "('name',)", 'unique_together': "(('app_label', 'model'),)", 'object_name': 'ContentType', 'db_table': "'django_content_type'"},

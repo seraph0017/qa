@@ -7,6 +7,11 @@
     {% block content %}
     <h1>{{ topic.topic_title }}</h1>
     
+    {% for tag in tags %}
+    <span class="label label-default">{{tag.tag_name}}</span>
+    {% endfor %}
+
+    <hr/>
     <ul>
         {{ topic.topic_time }}
     </ul>
@@ -29,7 +34,7 @@
     <img class="img-rounded J_head" src="{% gravatar_url comment.user.email %}"></img>
     <div class="container-fluid none-padding J_info">
 
-        <p class="muted"><small>{{ comment.user.get_profile }}</small> <small>{{ comment.submit_date|date:"Y-m-d, H:m:s" }}</small></p>
+        <p class="muted"><small>{{ comment.user.get_profile }}</small> <small>{{ comment.submit_date|date:"Y-m-d, H:i:s" }}</small></p>
         {{ comment.comment }}
     </div>
     <hr class="soften">

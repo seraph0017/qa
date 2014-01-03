@@ -1,27 +1,86 @@
 #encoding:utf-8
 import json
+import datetime
 from django.http import Http404, HttpResponse
 from django.shortcuts import render_to_response, RequestContext
 from models import Board,Topic, BoardForm, TopicForm
-from account.models import UserProfile, SpecialField, Tools
+from account.models import UserProfile, Tag
 from django.contrib.auth.models import User
 from django.views.decorators.csrf import csrf_protect
-from account.models import SpecialField, Tools
+
+
+
+from django_comments.models import Comment
+from django.db.models.signals import pre_save
+from django.dispatch import receiver
 
 # Create your views here.
 
 
 @csrf_protect
 def listing(request):
+    board = None
+    tag = None
+    query = None
+    top_topic_list = []
+    nor_topic_list = []
 
-    pub_list = Topic.objects.all().order_by('-topic_time')
+    # 公告贴
+    pub_list = Topic.objects.filter(topic_is_pub='yes').order_by('-topic_final_comment_time')
+    # 板块
+    board_list = Board.objects.all()
+    # 标签
+    tags = Tag.objects.all()
+
+
+    if 'board' in request.GET and request.GET['board'] != '':
+        board = request.GET['board']
+        board = Board.objects.get(board_title=board)
+
+    if 'tag' in request.GET and request.GET['tag'] != '':
+        tag = request.GET['tag']
+        tag = Tag.objects.get(tag_name=tag)
+
+    if 'query' in request.GET and request.GET['query'] != '':
+        query = request.GET['query']
+
+
+    # 如果有查询
+    if query:
+        topic_list = Topic.objects.filter(topic_is_pub='no',topic_title__contains=query).order_by('-topic_final_comment_time')
+    elif board:
+        if tag:
+            topic_list = tag.topic_set.filter(topic_is_pub='no',topic_board=board).order_by('-topic_final_comment_time')
+        else:
+            topic_list = Topic.objects.filter(topic_is_pub='no',topic_board=board).order_by('-topic_final_comment_time')
+    elif tag:
+        topic_list = tag.topic_set.filter(topic_is_pub='no').order_by('-topic_final_comment_time')
+    else:
+        topic_list = Topic.objects.filter(topic_is_pub='no').order_by('-topic_final_comment_time')
+
+
+    for topic in topic_list:
+        if topic.topic_is_top == 'yes':
+            top_topic_list.append(topic)
+        else:
+            nor_topic_list.append(topic)
+
+    topic_list = top_topic_list + nor_topic_list
 
 
 
+    
 
     return render_to_response('list.html',
             {
             "pub_list":pub_list,
+            "topic_list":topic_list,
+
+            "board_list":board_list,
+            "board_info":board,
+
+            "tags":tags,
+            
             },
             context_instance = RequestContext(request)
     )
@@ -33,7 +92,8 @@ def details(request,topic_id):
 
     try:
         topic = Topic.objects.get(pk=topic_id)
-        topic_recent = Topic.objects.all().order_by('-topic_time')[:10]
+        tags = topic.topic_tag.all()
+
 
     except Topic.DoesNotExist:
         raise Http404
@@ -42,7 +102,8 @@ def details(request,topic_id):
         'detail.html',
         {
         'topic':topic,
-        'topic_recent':topic_recent,
+
+        'tags':tags,
         },
         context_instance = RequestContext(request),
     )
@@ -50,7 +111,15 @@ def details(request,topic_id):
 
 def details_show_comment(request, id=''):
     details = Topic.objects.get(id=id)
-    return render_to_response('details_comments_show.html', {"details": details})
+    
+
+    return render_to_response(
+        'details_comments_show.html', 
+        {
+        "details": details,
+
+        }
+        )
 
 
 
@@ -61,15 +130,15 @@ def publish(request):
 
 
     boards = Board.objects.all().order_by('-board_time')
-    spfields = SpecialField.objects.all()
-    tools = Tools.objects.all()
+    
+    tags = Tag.objects.all()
     
     return render_to_response(
             'publish.html',
             {
             'boards':boards,
-            'spfields':spfields,
-            'tools':tools,
+
+            'tags':tags,
             },
             context_instance = RequestContext(request),
         )
@@ -88,8 +157,9 @@ def publish_api(request):
         new_user = User.objects.get(email=data['topic_author'])
         new_user_profile = UserProfile.objects.get(user=new_user)
 
-        new_field = SpecialField.objects.get(field_title=data['topic_field'])
-        new_tool = Tools.objects.get(tool_title=data['topic_tool'])
+        new_tags = data['topic_tags'].split(',')
+
+
 
         new_topic = Topic(
                 topic_status = data['topic_status'],
@@ -98,12 +168,19 @@ def publish_api(request):
                 topic_content = data['topic_content'],
                 topic_board = new_board,
                 topic_author =new_user_profile,
-                topic_category = new_field,
-                topic_tool = new_tool,
+               
                 topic_is_pub = data['topic_is_pub'],
+                topic_final_comment_time = datetime.datetime.now(),
+                topic_final_comment_user = new_user_profile,
             )
 
         new_topic.save()
+
+        for tag in new_tags:
+            if tag != '':
+                t = Tag.objects.get(tag_name=tag)
+                new_topic.topic_tag.add(t)
+                new_topic.save()
 
         
 
@@ -122,7 +199,22 @@ def publish_api(request):
 
 
 
-        
+@receiver(pre_save, sender=Comment)
+def my_handler(sender, **kw):
+    comment = kw['instance']
+    topic = Topic.objects.get(pk=comment.object_pk)
+
+    new_user = User.objects.get(email=comment.user_email)
+    new_user_profile = UserProfile.objects.get(user=new_user)
+    topic.topic_final_comment_user = new_user_profile
+    topic.topic_final_comment_time = comment.submit_date
+
+
+    topic.save()
+
+
+
+
 
 
 

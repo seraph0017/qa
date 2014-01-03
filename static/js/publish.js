@@ -30,33 +30,43 @@ $(document).ready(function(){
             }
         }
     });
+
+   
+
     $('#publishform').submit(function(){
         var data = null;
             title = $('#publishform input[name="title"]').val();
             content = $('#publishform textarea[name="content"]').val();
             board = $('#publishform select[name="board"]').val();
-            field = $('#publishform select[name="field"]').val();
-            tool = $('#publishform select[name="tool"]').val();
+            tags = $('#publishform select[name="field"]').val();
+            nodes = $('input[name="tags"]');
+            tags = "";
+
             csrftoken = getCookie('csrftoken');
+
             user = $('.J_email').text();
             baseurl = window.location.href;
             activeurl = [baseurl.split('/')[0],baseurl.split('/')[1],baseurl.split('/')[2]].join('/');
             status = null;
+            for(var i=0;i<nodes.length;i++){
+                if(nodes[i].checked){
+                    tags+=(","+nodes.eq(i).val());
+                }
+            }
 
-        console.log('title',title,'content',content,'board',board,'field',field,'tool',tool,'email',user,'url',activeurl);
+        // console.log('title',title,'content',content,'board',board,'email',user,'url',activeurl,'tags',tags);
         data = {
             'topic_title':title,
             'topic_content':content,
             'topic_board':board,
-            'topic_field':field,
-            'topic_tool':tool,
+            'topic_tags':tags,
             'topic_author':user,
             'topic_status':'normal',
             'topic_is_top':'no',
             'topic_is_pub':'no',
         };
         $.post(activeurl+"/publish/v1/",data,function(json){
-            console.log(json);
+            // console.log(json);
             status = json['status'];
             if(status=='success'){
                 // console.log(status);

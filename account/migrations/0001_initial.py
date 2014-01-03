@@ -8,27 +8,57 @@ from django.db import models
 class Migration(SchemaMigration):
 
     def forwards(self, orm):
+        # Adding model 'SpecialField'
+        db.create_table(u'account_specialfield', (
+            (u'id', self.gf('django.db.models.fields.AutoField')(primary_key=True)),
+            ('field_title', self.gf('django.db.models.fields.CharField')(max_length=255)),
+        ))
+        db.send_create_signal(u'account', ['SpecialField'])
+
+        # Adding model 'Tools'
+        db.create_table(u'account_tools', (
+            (u'id', self.gf('django.db.models.fields.AutoField')(primary_key=True)),
+            ('tool_title', self.gf('django.db.models.fields.CharField')(max_length=255)),
+        ))
+        db.send_create_signal(u'account', ['Tools'])
+
         # Adding model 'UserProfile'
         db.create_table(u'account_userprofile', (
             (u'id', self.gf('django.db.models.fields.AutoField')(primary_key=True)),
             ('user', self.gf('django.db.models.fields.related.ForeignKey')(to=orm['auth.User'], unique=True)),
             ('screen_name', self.gf('django.db.models.fields.CharField')(max_length=10)),
-            ('fav_local', self.gf('django.db.models.fields.CharField')(default='hand', max_length=20)),
-            ('fav_tool', self.gf('django.db.models.fields.CharField')(default='hand', max_length=20)),
+            ('fav_local', self.gf('django.db.models.fields.related.ForeignKey')(related_name='user_specialfield', to=orm['account.SpecialField'])),
+            ('fav_tool', self.gf('django.db.models.fields.related.ForeignKey')(related_name='user_tools', to=orm['account.Tools'])),
         ))
         db.send_create_signal(u'account', ['UserProfile'])
 
 
     def backwards(self, orm):
+        # Deleting model 'SpecialField'
+        db.delete_table(u'account_specialfield')
+
+        # Deleting model 'Tools'
+        db.delete_table(u'account_tools')
+
         # Deleting model 'UserProfile'
         db.delete_table(u'account_userprofile')
 
 
     models = {
+        u'account.specialfield': {
+            'Meta': {'object_name': 'SpecialField'},
+            'field_title': ('django.db.models.fields.CharField', [], {'max_length': '255'}),
+            u'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'})
+        },
+        u'account.tools': {
+            'Meta': {'object_name': 'Tools'},
+            u'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
+            'tool_title': ('django.db.models.fields.CharField', [], {'max_length': '255'})
+        },
         u'account.userprofile': {
             'Meta': {'object_name': 'UserProfile'},
-            'fav_local': ('django.db.models.fields.CharField', [], {'default': "'hand'", 'max_length': '20'}),
-            'fav_tool': ('django.db.models.fields.CharField', [], {'default': "'hand'", 'max_length': '20'}),
+            'fav_local': ('django.db.models.fields.related.ForeignKey', [], {'related_name': "'user_specialfield'", 'to': u"orm['account.SpecialField']"}),
+            'fav_tool': ('django.db.models.fields.related.ForeignKey', [], {'related_name': "'user_tools'", 'to': u"orm['account.Tools']"}),
             u'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
             'screen_name': ('django.db.models.fields.CharField', [], {'max_length': '10'}),
             'user': ('django.db.models.fields.related.ForeignKey', [], {'to': u"orm['auth.User']", 'unique': 'True'})

@@ -29,6 +29,17 @@ TEMPLATE_DEBUG = True
 ALLOWED_HOSTS = []
 
 
+# by max 20140103
+
+TEMPLATE_CONTEXT_PROCESSORS = (
+    'django.contrib.auth.context_processors.auth',
+    'django.core.context_processors.debug',
+    'django.core.context_processors.i18n',
+    'django.core.context_processors.media',
+    'django.core.context_processors.static',
+    "django.core.context_processors.request",
+)
+
 # Application definition
 
 INSTALLED_APPS = (
@@ -45,11 +56,14 @@ INSTALLED_APPS = (
     # 'my_comment_app',
 
 
+
+
     # 'south',
     'account',
     'bbs',
     'django_gravatar',
-    'tinymce'
+    'tinymce',
+    'pagination',
 )
 
 # COMMENTS_APP = 'my_comment_app'
@@ -63,6 +77,7 @@ MIDDLEWARE_CLASSES = (
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'pagination.middleware.PaginationMiddleware',
 )
 
 ROOT_URLCONF = 'qa.urls'

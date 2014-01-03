@@ -15,10 +15,28 @@ function getCookie(name) {
     return cookieValue;
 }
 
-
+function getArgs(arg) {
+    var args = null;
+        board = null;
+        tag = null;
+    args = location.search;
+    if(args!=''){
+        args = args.split('?')[1];
+        board = decodeURIComponent(args.split('&')[0].split('=')[1]);
+        tag = decodeURIComponent(args.split('&')[1].split('=')[1]);
+        if(arg=='board'){
+            return board;
+        }else if(arg=='tag'){
+            return tag;
+        }else{
+            console.log('wrong')
+        }
+    }
+}
 
 
 $(document).ready(function(){
+
 
     $.ajaxSetup({
         crossDomain: false, // obviates need for sameOrigin test
@@ -31,39 +49,24 @@ $(document).ready(function(){
 
 
     // active
-    var cateactive = null,
-        siteactive = null,
+    var boardactive = null,
+        tagactive = null,
         baseurl = window.location.href;
         activeurl = [baseurl.split('/')[0],baseurl.split('/')[1],baseurl.split('/')[2]].join('/') 
 
 
-    if(baseurl.indexOf('site')>=0){
-        siteactive = baseurl.split('=')[1]
-        $('#'+siteactive).addClass('active')
-    }
-    if(baseurl.split('/').length>4){
-        cateactive = baseurl.split('/')[3]
-        $('#'+cateactive).addClass('active')
-    }
+    boardactive = getArgs('board')
+    tagactive = getArgs('tag')
+    $('#'+boardactive).addClass('active')
+    $('#'+tagactive).removeClass('label-info').addClass('label-primary')
 
 
-    // site filter
-    $('#chinaluxus').click(function(){
-        $('#siteswitch').val('chinaluxus');
-    });
-    $('#527motor').click(function(){
-        $('#siteswitch').val('527motor');
-    });
-    $('#autohome').click(function(){
-        $('#siteswitch').val('autohome');
-    });
-    $('#neeu').click(function(){
-        $('#siteswitch').val('neeu');
-    });
+    
+    
 
     // redirect
     $('.J_redi').click(function(){
-        console.log('1111');
+
         window.location.href=activeurl+'/publish/';
     })
 
@@ -134,18 +137,18 @@ $(document).ready(function(){
             // returndata = eval("("+json+")"); 
             status = json['status']
             if(status=='success'){
-                console.log(json)
+                // console.log(json)
                 $('div#reg button[data-dismiss="modal"]').eq(0).click();
                 $('ul.navbar-right a[data-target="#login"]').eq(0).click();
 
             }else if(status=='already exist'){
-                console.log(json)
+                // console.log(json)
                 $('form#regform span').eq(0).replaceWith(
                         '<span class="label label-warning">该用户已存在，请重新输入用户名密码</span>'
                     )
 
             }else if(status=='type worong'){
-                console.log(json)
+                // console.log(json)
                 $('form#regform span').eq(0).replaceWith(
                         '<span class="label label-warning">昵称、邮箱或密码格式不正确，请重新输入</span>'
                     )
@@ -160,6 +163,20 @@ $(document).ready(function(){
         return false;
     });
 
+
+    // tag filter
+    $('.J_tags').click(function(){
+        $('#tagswitch').val($(this).text());
+        $('#boardswitch').val(getArgs('board'));
+        
+        $('form#mysite').submit()
+    });
+
+    // site filter
+    $('.J_board_select').click(function(){
+        $('#boardswitch').val($(this).text());
+        $('#tagswitch').val(getArgs('tag'));
+    });
 
    
 });
