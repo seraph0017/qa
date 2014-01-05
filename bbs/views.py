@@ -13,7 +13,7 @@ from django.views.decorators.csrf import csrf_protect
 from django_comments.models import Comment
 from django.db.models.signals import pre_save
 from django.dispatch import receiver
-
+from django.contrib.auth.decorators import login_required  
 # Create your views here.
 
 
@@ -124,7 +124,7 @@ def details_show_comment(request, id=''):
 
 
 
-
+@login_required
 @csrf_protect
 def publish(request):
 
@@ -149,6 +149,7 @@ def publish_api(request):
 
     if request.method == 'POST':
         data = request.POST
+
        
 
         new_board = Board.objects.get(board_title=data['topic_board'])

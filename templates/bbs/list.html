@@ -5,7 +5,6 @@
 {% load gravatar %}
 {% load pagination_tags %}
 {% autopaginate topic_list 10 %}
-
 <div class="panel panel-default">
   <div class="panel-heading">公告栏
   </div>
@@ -18,13 +17,15 @@
       {%get_comment_count for i as comment_count%}
       <h4>
         <a href="{% url 'bbs:detail' i.id %}">{{ i.topic_title }}</a>
-        <span class="badge pull-right J_comment_count">{{ comment_count }}</span>
+        <span class="J_create_info pull-right ">
+          - create by·{{i.topic_author}}·{{ i.topic_time|date:"Y/m/d,H:i" }}
+          <span class="badge J_comment_count">{{ comment_count }}</span>
+        </span>
       </h4>
-      ·
-      <span class="label label-default">{{ i.topic_final_comment_user }}
-      最后回复于
-      {{ i.topic_final_comment_time|date:"Y/m/d,H:i" }}</span>
-      ·
+
+      <span class="J_reply_info">
+        most recent reply·{{ i.topic_final_comment_user }}·{{ i.topic_final_comment_time|date:"Y/m/d,H:i" }}
+      </span>
     </div>
   </div>
 </div>
@@ -51,19 +52,26 @@
           {%get_comment_count for i as comment_count%}
           <h4>
             <a href="{% url 'bbs:detail' i.id %}">{{ i.topic_title }}</a>
-            <span class="badge pull-right J_comment_count">{{ comment_count }}</span>
+            <span class="J_create_info pull-right ">
+              - create by·{{i.topic_author}}·{{ i.topic_time|date:"Y/m/d,H:i" }}
+              <span class="badge J_comment_count">{{ comment_count }}</span>
+            </span>
+            
+            
           </h4>
           
-          ·
-          <span class="label label-default">{{ i.topic_final_comment_user }}
-          最后回复于
-          {{ i.topic_final_comment_time|date:"Y/m/d,H:i" }}</span>
-          ·
+          
+          <span class="J_reply_info">
+            most recent reply·{{ i.topic_final_comment_user }}·{{ i.topic_final_comment_time|date:"Y/m/d,H:i" }}
+          </span>
+          
         </div>
       </div>
     </div>
     {% endfor %}
+    <div class="J_paginate">
     {% paginate %}
+  </div>
   </div>
 </div>
 
@@ -94,5 +102,6 @@
 <hr/>
 {% endblock %}
 {% block script %}
-<script src="/static/js/common.js"></script>
+
 {% endblock %}
+

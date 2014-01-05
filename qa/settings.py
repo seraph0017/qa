@@ -29,6 +29,9 @@ TEMPLATE_DEBUG = True
 ALLOWED_HOSTS = []
 
 
+# login required
+LOGIN_URL = r'/'
+
 # by max 20140103
 
 TEMPLATE_CONTEXT_PROCESSORS = (
@@ -62,7 +65,9 @@ INSTALLED_APPS = (
     'account',
     'bbs',
     'django_gravatar',
-    'tinymce',
+
+
+
     'pagination',
 )
 
@@ -132,3 +137,4 @@ TEMPLATE_DIRS = [
 
 # by max
 AUTH_PROFILE_MODULE = 'account.UserProfile'
+

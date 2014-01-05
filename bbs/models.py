@@ -2,7 +2,7 @@
 from django.db import models
 from account.models import UserProfile, Tag
 from django.forms import ModelForm
-from tinymce.models import HTMLField
+
 
 # 板块
 class Board(models.Model):
@@ -38,7 +38,7 @@ class Topic(models.Model):
 
 
     topic_title = models.CharField(max_length=255)
-    topic_content = HTMLField()
+    topic_content = models.TextField()
     topic_time = models.DateTimeField(auto_now_add=True)
 
     topic_board = models.ForeignKey(Board,related_name='topic_board')

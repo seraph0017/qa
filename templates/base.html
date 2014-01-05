@@ -1,6 +1,5 @@
 <!DOCTYPE html>
 {% load comments %}
-
 {% load staticfiles %}
 <!--[if lt IE 7]> <html class="no-js ie6 oldie" lang="en"> <![endif]-->
 <!--[if IE 7]>    <html class="no-js ie7 oldie" lang="en"> <![endif]-->
@@ -52,8 +51,9 @@
       </ul>
       
       <ul class="nav navbar-nav navbar-right J_loginname">
+
         {% if user.is_authenticated %}
-        <li><a href="/account/logout/" class="J_email">{{ user.email }}</a></li>
+        <li><a href="/account/logout/" class="J_email">{{ user.get_profile }}</a></li>
         {% else %}
         <li>
         <a href="#" data-toggle="modal" data-target="#login">登录</a>
@@ -81,8 +81,8 @@
           <form id="loginform" method="post" enctype="multipart/form-data" class="form-signin" role="form">
             <span class="label label-warning"></span>
             {% csrf_token %}
-            <input type="text" class="form-control" placeholder="请输入邮箱地址" required="" autofocus="" name="username">
-            <input type="password" class="form-control" placeholder="请输入您的密码" required="" name="password">
+            <input type="text" class="form-control" placeholder="请输入邮箱地址" required="required" autofocus="" name="username">
+            <input type="password" class="form-control" placeholder="请输入您的密码" required="required" name="password">
             <button class="btn btn-lg btn-primary btn-block" type="submit">登录</button>
           </form>
       </div>
@@ -106,9 +106,9 @@
         <form id="regform" method="post" enctype="multipart/form-data" class="form-signin" role="form">
         <span class="label label-warning"></span>
         {% csrf_token %}
-        <input type="text" class="form-control" placeholder="请输入您的昵称" required="" autofocus="" name="screen_name">
-        <input type="text" class="form-control" placeholder="请输入邮箱地址" required="" autofocus="" name="username">
-        <input type="password" class="form-control" placeholder="请输入您的密码" required="" name="password">
+        <input type="text" class="form-control" placeholder="请输入您的昵称" required="required" autofocus="" name="screen_name">
+        <input type="text" class="form-control" placeholder="请输入邮箱地址" required="required" autofocus="" name="username">
+        <input type="password" class="form-control" placeholder="请输入您的密码" required="required" name="password">
         <button class="btn btn-lg btn-primary btn-block" type="submit">注册</button>
         </form>
       </div>
@@ -159,6 +159,7 @@
 </div>
   <footer>
     <p>© max 2013</p>
+    <div class="J_user">{{user}}</div>
   </footer>
 
 </div>
@@ -173,7 +174,10 @@
 <script src="/static/js/jquery.js"></script>
 <script src="/static/js/bootstrap.js"></script>
 <script src="/static/js/offcanvas.js"></script>
+<script src="/static/js/common.js"></script>
+
 {% block script %}
+
 {% endblock %}
 
 

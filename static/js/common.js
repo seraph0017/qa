@@ -1,3 +1,10 @@
+// django send
+function csrfSafeMethod(method) {
+    // these HTTP methods do not require CSRF protection
+    return (/^(GET|HEAD|OPTIONS|TRACE)$/.test(method));
+}
+
+
 // get csrf
 function getCookie(name) {
     var cookieValue = null;
@@ -19,8 +26,9 @@ function getArgs(arg) {
     var args = null;
         board = null;
         tag = null;
+
     args = location.search;
-    if(args!=''){
+    if(args!=''&&args.indexOf('board')>0){
         args = args.split('?')[1];
         board = decodeURIComponent(args.split('&')[0].split('=')[1]);
         tag = decodeURIComponent(args.split('&')[1].split('=')[1]);
@@ -60,13 +68,16 @@ $(document).ready(function(){
     $('#'+boardactive).addClass('active')
     $('#'+tagactive).removeClass('label-info').addClass('label-primary')
 
+    if(location.search.indexOf('next')>0){
+        $('ul.navbar-right a[data-target="#login"]').eq(0).click();
+    }
+
 
     
     
 
     // redirect
     $('.J_redi').click(function(){
-
         window.location.href=activeurl+'/publish/';
     })
 
@@ -90,11 +101,11 @@ $(document).ready(function(){
             // returndata = eval("("+json+")"); 
             status = json['status']
             if(status=='already'){
-                // console.log(json)
-                $('ul.nav.navbar-nav.navbar-right').eq(0).replaceWith(
-                        '<ul class="nav navbar-nav navbar-right"><li><a href="/account/logout/">'+json['username']+'</a></li></ul>'
-                    )
-                $('div#login button[data-dismiss="modal"]').eq(0).click();
+                window.location.reload();
+                if(location.search.indexOf('next=/publish/')>0){
+
+                    window.location.href=activeurl+'/publish/';
+                }
             }else if(status=='not exist'){
                 // console.log(json)
                 $('form#loginform span').eq(0).replaceWith(
@@ -107,12 +118,12 @@ $(document).ready(function(){
                         '<span class="label label-warning">邮箱或密码格式不正确，请重新输入</span>'
                     )
             }else{
-                // console.log(json)
+                
             }
             
 
         })
-        // window.location.reload()
+
         
         return false;
     });
@@ -185,11 +196,7 @@ $(document).ready(function(){
 
 
 
-// django send
-function csrfSafeMethod(method) {
-    // these HTTP methods do not require CSRF protection
-    return (/^(GET|HEAD|OPTIONS|TRACE)$/.test(method));
-}
+
 
 
 

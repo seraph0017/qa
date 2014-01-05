@@ -1,9 +1,5 @@
-<!DOCTYPE html>
-<html>
-<head>
-    <title></title>
-</head>
-<body>
+{% extends "base.html" %}
+{% block content %}
 <form method="post" enctype="multipart/form-data">
     {% csrf_token %}
     {{ lf.as_p }}
@@ -16,5 +12,4 @@
     {% endfor %}
 </ul>
 {% endif %}
-</body>
-</html>
+{% endblock %}

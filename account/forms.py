@@ -5,7 +5,7 @@ from models import UserProfile
 
 class RegisterForm(forms.Form):
     username = forms.EmailField(label='信箱',help_text='请填写您的email')
-    screen_name = forms.CharField(label='昵称',required=True,max_length=20,min_length=3,help_text='请正确填写')
+    screen_name = forms.CharField(label='昵称',required=True,max_length=20,min_length=1,help_text='请正确填写')
     password = forms.CharField(label='密码',required=True,max_length=20,min_length=6,help_text='密码',widget=forms.PasswordInput())
 
 

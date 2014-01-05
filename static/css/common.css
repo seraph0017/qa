@@ -5,7 +5,8 @@ body{
 div.main {
     background-color: #fff;
     padding: 20px;
-
+    margin-right: 100px;
+    margin-left: 100px;
 }
 
 form#search {
@@ -59,7 +60,7 @@ img.listImg {
 
 
 #id_comment {
-    width: 800px;
+    width: 670px;
     height: 100px;
 }
 
@@ -95,6 +96,7 @@ div.J_info {
 }
 
 span.J_comment_count {
+  margin-left: 10px;
   margin-right: 10px;
 }
 
@@ -117,4 +119,33 @@ span.J_tags {
   cursor: pointer;
 }
 
+a.J_frontpage {
+  margin-left: 90px !important;
+}
+
+ul.J_loginname {
+  margin-right: 90px !important;
+}
+
+div.J_paginate {
+  text-align: center;
+}
+
+span.J_create_info {
+  font-size: xx-small;
+  font-style: normal;
+  color: grey;
+  margin-left: 10px;
+}
+
+span.J_reply_info {
+  font-size: xx-small;
+  font-style: normal;
+  color: grey;
+
+}
+
+div.J_user {
+  display: none;
+}
 

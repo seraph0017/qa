@@ -5,7 +5,8 @@
 {% block title %}{{ topic.topic_title }}{% endblock %}
 <div class="article">
     {% block content %}
-    <h1>{{ topic.topic_title }}</h1>
+    <img class="img-rounded J_head" src="{% gravatar_url topic.topic_author.user.email %}"></img>
+    <h4>{{ topic.topic_title }}</h4>
     
     {% for tag in tags %}
     <span class="label label-default">{{tag.tag_name}}</span>
@@ -27,7 +28,7 @@
 <article id="cmt">
     {% get_comment_count for topic as comment_count %}
 
-    <h4 class="muted comtop">{{ comment_count }} Comments</h4>
+    <h4 class="muted comtop">{{ comment_count }} 条评论</h4>
     <hr class="soften">
     {% get_comment_list for topic as topic_com %}
     {% for comment in topic_com %}
@@ -45,7 +46,7 @@
     {% get_comment_form for topic as topic_form %}
 
     <div id="comment_form">
-        <h4 class="muted comtop">New Comments</h4>
+        <h4 class="muted comtop">新评论</h4>
         <form class="form-horizontal" action="{% comment_form_target %}" method="post">
             <fieldset>
                 {% csrf_token %}
@@ -56,9 +57,9 @@
                 {{ topic_form.submit_date }}
                 {{ topic_form.security_hash }}
                 <div class="control-group">
-                    <label class="control-label" for="id_comment">comment: </label>
+
                     <div class="controls">
-                        <textarea class="input-xlarge comment" id="id_comment" name="comment" placeholder="please enter comment" required="required"></textarea>
+                        <textarea class="form-control" id="id_comment" name="comment" placeholder="请输入评论" required="required"></textarea>
                     </div>
                 </div>
                 <p style="display:none;"><label for="id_honeypot">如果你在该字>段中输入任何内容，那么你的评论就会被视为垃圾评论。</label> <input type="text" name="honeypot" id="id_honeypot"></p>
@@ -91,9 +92,10 @@ function bindPostCommentHandler() {
             success: function(html, textStatus) {
                 $('#cmt').replaceWith(html);
                 $('#comment_form form')[0].reset();
+
             },
             error: function (XMLHttpRequest, textStatus, errorThrown) {
-                $('#comment_form form').replaceWith('Your comment was unable to be posted at this time.  We apologise for the inconvenience.');
+                $('#comment_form form').replaceWith('请先登陆之后再回复');
             }
         });
         return false;
@@ -101,7 +103,16 @@ function bindPostCommentHandler() {
 }
 
 $(document).ready(function() {
+    $.ajaxSetup({
+        crossDomain: false, // obviates need for sameOrigin test
+        beforeSend: function(xhr, settings) {
+            if (!csrfSafeMethod(settings.type)) {
+                xhr.setRequestHeader("X-CSRFToken", csrftoken);
+            }
+        }
+    });
     bindPostCommentHandler();
-});
+    var csrftoken = getCookie('csrftoken');
+})
 </script>
 {% endblock %}

@@ -21,6 +21,27 @@ function getCookie(name) {
     return cookieValue;
 }
 
+function getPublishArgs(arg) {
+    var args = null;
+        board = null;
+        tag = null;
+
+    args = document.referrer;
+    if(args!=''&&args.indexOf('board')>0){
+        args = args.split('?')[1];
+        board = decodeURIComponent(args.split('&')[0].split('=')[1]);
+        tag = decodeURIComponent(args.split('&')[1].split('=')[1]);
+        if(arg=='board'){
+            return board;
+        }else if(arg=='tag'){
+            return tag;
+        }else{
+            console.log('wrong')
+        }
+    }
+}
+
+
 $(document).ready(function(){
     $.ajaxSetup({
         crossDomain: false, // obviates need for sameOrigin test
@@ -31,12 +52,19 @@ $(document).ready(function(){
         }
     });
 
-   
+
+    // 默认选中板块
+    var selectboard = null;
+    selectboard = getPublishArgs('board');
+    $('#'+selectboard).attr("SELECTED","SELECTED");
+    if(selectboard!=null){
+        $('#J_board').hide();
+    }
 
     $('#publishform').submit(function(){
         var data = null;
             title = $('#publishform input[name="title"]').val();
-            content = $('#publishform textarea[name="content"]').val();
+            content = $(document.getElementById('content_ifr').contentWindow.document.body).html();
             board = $('#publishform select[name="board"]').val();
             tags = $('#publishform select[name="field"]').val();
             nodes = $('input[name="tags"]');
@@ -44,7 +72,7 @@ $(document).ready(function(){
 
             csrftoken = getCookie('csrftoken');
 
-            user = $('.J_email').text();
+            user = $('.J_user').text();
             baseurl = window.location.href;
             activeurl = [baseurl.split('/')[0],baseurl.split('/')[1],baseurl.split('/')[2]].join('/');
             status = null;
