@@ -80,7 +80,7 @@ def login(request):
                 auth_login(request,user)
                 return_user = User.objects.get(username=data['username'])
                 return_user = return_user.userprofile_set.all()
-                print return_user[0].screen_name
+
                 # return HttpResponseRedirect('/')
                 # screen_name = return_user.screen_name
                 return HttpResponse(simplejson.dumps({
