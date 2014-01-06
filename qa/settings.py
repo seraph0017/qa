@@ -10,8 +10,28 @@ https://docs.djangoproject.com/en/1.6/ref/settings/
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 import os
-# import django_comments
+import sys
+
+selfpath = os.path.split(os.path.realpath(__file__))[0]
+PATH = os.path.abspath(os.path.join(selfpath,'..'))
 BASE_DIR = os.path.dirname(os.path.dirname(__file__))
+ENV = os.getenv('ENV')
+
+
+if ENV in ['DEBUG','DEV']:
+    isdebug = True
+    STATIC_ROOT = ''
+    STATICFILES_DIRS = (
+    os.path.join(BASE_DIR, "static"),
+
+)
+else:
+    STATIC_ROOT = PATH + '/static'
+    STATICFILES_DIRS = ()
+    isdebug = False
+
+# import django_comments
+
 
 
 
@@ -22,11 +42,11 @@ BASE_DIR = os.path.dirname(os.path.dirname(__file__))
 SECRET_KEY = 'ul55o_%ki$enm$e!a-2*0%=%dfckkc2r6v1*!qq+@h=%zc3o0h'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = isdebug
 
 TEMPLATE_DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = '*'
 
 
 # login required
@@ -120,13 +140,10 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/1.6/howto/static-files/
 
 STATIC_URL = '/static/'
-
+STATIC_ROOT = STATIC_ROOT
 # static files
 # by max 2013 12 22
-STATICFILES_DIRS = (
-    os.path.join(BASE_DIR, "static"),
-
-)
+STATICFILES_DIRS = STATICFILES_DIRS
 
 # Templates files
 # by max 2013 12 21
