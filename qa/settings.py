@@ -85,6 +85,7 @@ INSTALLED_APPS = (
     'account',
     'bbs',
     'django_gravatar',
+    # 'lettuce.django',
 
 
 
